@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="app">
+        <button-counter></button-counter>
+    </div>
+</body>
+
+</html>
+<script src="./lib/vue.js"></script>
+
+<!--定义模板 -->
+<script type="text/html" id="tianqi">
+        <div>
+                <h2>天气查询</h2>
+                <input type="text" v-model="tqlist" placeholder="请输入城市名称" @keyup.enter="search">
+                <h3>{{city}}</h3>
+                <ul>
+                    <li v-for="(item, index) in arrlist">
+                        日期:{{item.date}}----{{item.high}}----{{item.low}}
+                    </li>
+                </ul>
+        </div>
+</script>
+<script>
+        Vue.component('button-counter', {
+            data: function () {
+                return {
+                    city:"",
+                    tqlist: "",
+                    arrlist: []
+                }
+            },
+            template: '#tianqi',
+            methods: {
+            search() {
+                //发起AJAX请求,原生
+                // 创建异步对象
+                let ajax = new XMLHttpRequest();
+                //请求行
+                ajax.open("get", `https://www.apiopen.top/weatherApi?city=${this.tqlist}`);
+                //请求头(get 不需要,post需要)
+                //ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                //回调函数
+                ajax.onload = () => {
+                    // console.log(backdata);
+                    let backdata = JSON.parse(ajax.responseText);
+                    this.city=this.tqlist;
+                    this.arrlist = backdata.data.forecast;
+                }
+                // 发送请求(post需要传入参数,get不需要)
+                ajax.send();
+            }
+        }
+        })
+
+
+    let app = new Vue({
+        el: ".app"     
+      
+    })
+</script>
